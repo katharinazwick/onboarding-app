@@ -1,0 +1,66 @@
+Module => fässt Teile der Anwendung zusammen / enthält Controller und Services
+
+***BEISPIEL***
+import { Module } from '@nestjs/common'; //STANDART IMPORT AUS FRAMEWORK
+import { UserController } from 'src/user.controller'; //IMPORTIERT CONTROLLER DER WAS MACHT (STATT src AUCH ./, DANN WIRD IM SELBEN VERZEICHNIS GESUCHT)
+import { UserService } from './user.service';
+
+@Module({ //
+  controllers: [UserController], //INHALTE WERDEN AUFGELISTET / USERCONTROLLER GEHÖRT ZUM MODULE
+  providers: [UserService],
+})
+export class UserModule {}
+
+
+controller => Empfangen der Anfrage und Aufrufen der bracuhbaren Logik / Service
+Bsp.
+Get => abrufen von Daten
+Post => erstellen von neuen Daten (inkl body)
+@Post ()
+    @Body() extrahiert den request body (die explizieten Daten)
+Put => akualisieren (inkl body)
+Delete => löschen (inkl body)
+Patch => teilweises aktuallisieren (inkl body)
+Head => gibt nur Header zurück / prüft nach Existenz
+Options =>
+All => reagiert auf alles
+
+
+***Beispiel***
+import { Controller, Get } from '@nestjs/common'; //IMPORTIEREN VON CONTROLLER UND GET AUS FRAMEWORK
+import { UserService } from './user.service';
+
+@Controller('users') //MAKIERT KLASSE ALS CONTROLLER DER MIT USERS ANSPRECHBAR IST
+export class UserController { //KLASSE DEFINIERREN 7 VERANTWORTLICH FÜR ANFRAGEN
+  constructor(private readonly userService: UserService) {} //FÜGT USERSERVICE IN CONTROLLER EIN => ENTHÄLT DESSEN FUNKTIONEN (PRIVATE READONLY => USERSERVICE NUR INNERHALB DES CONTROLLERS VERFÜGBAR UND NICHT VERÄNDERBAR)
+
+  @Get() //WENN "GET" LISTE ZURÜCK GEBEN
+  getUsers() {
+    return this.userService.findAll(); //FINDET ALLE USER ZUM AUSGEBEN
+  }
+}
+
+
+
+Service => Klasse inkl. Business Logik / kann Daten aus datenbank holen, Berechnungen durchführen, andere Operationen
+mit @Injectable werden sie als Abhängigkeit genutzt
+
+import { Injectable } from '@nestjs/common'; //IMPORTIEREN AUS FRAMEWORK
+
+@Injectable() //USERSERVICE WIRD ALS SERVICE MAKIERT DER IN ANDEREN KLASSEN VEFÜGBAR SEIN KANN
+export class UserService { //ENTHÄLT LOGIK WIE DATEN HOLEN UND VERARBEITEN
+  private users = [{ id: 1, name: 'John Doe' }]; //DEFINIEREN DER KLASSE INKL GESCHÄFTSLOGIK EINER LISTE
+
+  findAll() {
+    return this.users; //GIBT LISTE ALLER NUZER URÜCK / WIRD VON CONTROLL ZUM AUSGEBEN DER NUTZER BENUTZT
+  }
+}
+
+POSTMAN
+
+User erstellen: POST /users {"name":""} CHECK
+User abrufen: GET /users /userID(sonst alle) CHECK
+Notiz erstellen: POST /notes {"userId":"", "content":""} CHECK
+Notiz löschen: DELETE /notes/noteID CHECK
+für einen Nutzer alle IDs: GET /notes/users/userId CHECK024Kz
+
